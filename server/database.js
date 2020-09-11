@@ -95,7 +95,8 @@ export default class Database {
      */
     async editDocument(collection, primaryKey, fields) {
         try {
-            await this.db.collection(collection).updateOne(primaryKey, {$set: fields})
+            console.log(fields)
+            await this.db.collection(collection).updateOne(primaryKey, {$set: JSON.parse(fields)})
             await logSys(`Document EDIT with success in ${collection}`, 'success')
             return 'edited document'
         } catch (error) {

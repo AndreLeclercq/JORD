@@ -5,16 +5,17 @@ let initWebsite = new CustomEvent('initWebsite', {bubbles: true})
 let routeList = []
 let routes = {}
 let productsData = []
-let route, userData, pushNotificationHTML, userMenuHTML, loginLogoutFormHTML, cartHTML, cartRowHTML, userProfilHTML, productsOptionsHTML, productCardHTML, shippingHTML, paymentHTML
+let route, pushNotificationHTML, userMenuHTML, loginLogoutFormHTML, cartHTML, cartRowHTML, userProfilHTML,
+    productsOptionsHTML, productCardHTML, shippingHTML, paymentHTML
+let cartLocal = localStorage.getItem('cartLocal') ? JSON.parse(localStorage.getItem('cartLocal')) : 'null'
+let userData = localStorage.getItem('userLocal') ? JSON.parse(localStorage.getItem('userLocal')) : null
 let htmlData = document.createElement('html')
 
-/**
- * Init website
- * @type {HTMLDivElement}
- */
+    /**
+     * Init website
+     * @type {HTMLDivElement}
+     */
 ;(async () => {
-
-    // TODO: create loop to generate variable with html structure
     let getHtmlData = await fetch('assets/structures.html')
     htmlData.innerHTML = await getHtmlData.text()
     document.body.insertBefore(htmlData.querySelector('[data-id=navbar]').firstChild, document.getElementById('wrapper'))
@@ -57,9 +58,13 @@ let htmlData = document.createElement('html')
  */
 window.onpopstate = () => {
     let dataID = ''
-    routeList.forEach(p => { p.slug === document.location.pathname.replace( '/', '' ) ? dataID = p.fileName : null } )
+    routeList.forEach(p => {
+        p.slug === document.location.pathname.replace('/', '') ? dataID = p.fileName : null
+    })
     document.getElementById('content').innerHTML = htmlData.querySelector(`[data-id='${dataID}']`).innerHTML
-    setTimeout(() => { document.dispatchEvent(pageChange) }, 100 )
+    setTimeout(() => {
+        document.dispatchEvent(pageChange)
+    }, 100)
 }
 
 /**
@@ -82,6 +87,8 @@ class Router {
      */
     async loadPage(event) {
 
+        userData = localStorage.getItem('userLocal') ? JSON.parse(localStorage.getItem('userLocal')) : null
+
         this.event = event
         route = location.hash || '#'
         this.currentPage = await Object.values(this.routes).find(elt => route === `#${elt.slug}`)
@@ -92,20 +99,17 @@ class Router {
             await this.showPage()
         } else {
             if (this.currentPage.access === '1') {
-                userData = localStorage.getItem('userLocal')
-                if (userData != null) {
-                    userData = JSON.parse(userData)
-                    let userToken = userData.token
+                if (userData !== null) {
                     await (async () => {
-                        let fetchRes = fetch(`/api?action=token&token=${userToken}&state=verify`)
+                        let fetchRes = await fetch(`/api?action=token&token=${userData.token}&state=verify`)
                         let token = await fetchRes.json()
                         token !== true
                             ? (route = '#401',
                                 this.currentPage = Object.values(this.routes).find(elt => `#${elt.slug}` === '#401'),
-                                await this.showPage,
-                                localStorage.removeItem('userLocal'))
-                            : (userData = localStorage.getItem('userLocal'),
-                                await this.showPage)
+                                await this.showPage(),
+                                localStorage.removeItem('userLocal'),
+                                userData = null )
+                            : await this.showPage()
                     })()
                 } else {
                     route = '#401'
@@ -128,8 +132,24 @@ class Router {
         history.replaceState(this.currentHTML, this.currentPage.title, route.replace('#', '/'))
         document.getElementById('content').innerHTML = this.currentHTML
         document.querySelector('title').innerHTML = this.currentPage.title
-        if (this.event.type === 'dbReady')
-            document.dispatchEvent(pageReady)
+
+        if (this.event.type === 'dbReady') {
+            document.dispatchEvent(pageChange)
+            if (userData !== null) {
+                userIsLog()
+            } else {
+                document.getElementById('loginRegister').firstElementChild.innerHTML = loginLogoutFormHTML
+                loginRegister('modal')
+                localStorage.getItem('cartLocal') ? refreshCart() : null
+            }
+
+            document.querySelectorAll('.accountUserPage').forEach(elt => {
+                elt.innerHTML = userProfilHTML
+                getUserProfilPage(document.getElementById('accountUserPage'))
+            })
+            document.getElementById('cartModal').firstElementChild.innerHTML = cartHTML
+            refreshCart()
+        }
     }
 }
 

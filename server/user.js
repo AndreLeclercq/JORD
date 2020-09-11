@@ -18,7 +18,7 @@ export default class User {
     async createUser(data) {
         try {
             data.password = await argon2.hash(data.password)
-            return await db.createDocument('users', {email: data.email}, data)
+            return await db.createDocument('users', {email: data.email}, JSON.stringify(data))
         } catch (error) {
             await logSys(error, 'error')
             return error
@@ -33,7 +33,7 @@ export default class User {
      */
     async editUser(data) {
         try {
-            return await db.editDocument('users', {email: data.email}, data)
+            return await db.editDocument('users', {email: data.email}, JSON.stringify(data))
         } catch (error) {
             await logSys(error, 'error')
             return error
@@ -65,7 +65,6 @@ export default class User {
      * @returns {Promise<string|*>} token or error message
      */
     async login(data) {
-        logSys(`data => ${data}`, 'debug')
         try {
             this.document = await db.getDocument('users', {email: data.email})
             if (typeof this.document === 'object') {
