@@ -1,39 +1,5 @@
-let cartLocal = null
-
-document.addEventListener('pageChange', () => {
-
-    document.getElementById('addCart') ? document.getElementById('addCart').addEventListener('click', e => addCartFromProductPage(e.target)) : null
-    document.getElementById('cartModal').firstElementChild.innerHTML = cartHTML
-    refreshCart()
-
-})
-
-document.addEventListener('pageReady', () => {
-
-    document.getElementById('addCart') ? document.getElementById('addCart').addEventListener('click', e => addCartFromProductPage(e.target)) : null
-    document.getElementById('cartModal').firstElementChild.innerHTML = cartHTML
-    refreshCart()
-
-})
-
-document.addEventListener('click', e => {
-
-    if (e.target.closest('.removeCart')) {
-        let ref = e.target.closest('.removeCart').parentElement.parentElement.parentElement.querySelector('.refLabel > .value').innerHTML
-        let opt = e.target.closest('.removeCart').parentElement.parentElement.parentElement.querySelector('.refLabel > .optionsList') ? e.target.closest('.removeCart').parentElement.parentElement.parentElement.querySelector('.refLabel > .optionsList').innerHTML : ''
-        removeCart(ref, opt)
-    }
-
-
-    e.target.closest('.plusProduct') ? plusMinusProduct(e.target.closest('.plusProduct').closest('.qtyLabel'), 'plus') : null
-
-    e.target.closest('.minusProduct') ? plusMinusProduct(e.target.closest('.minusProduct').closest('.qtyLabel'), 'minus') : null
-
-})
-
 function refreshCart() {
-
-    cartLocal = localStorage.getItem('cartLocal') ? localStorage.getItem('cartLocal') : null
+    cartLocal = localStorage.getItem('cartLocal') ? localStorage.getItem('cartLocal') : 'null'
 
     const buttonCart = document.getElementById('buttonCart')
     const carts = document.querySelectorAll('.cart')
@@ -46,26 +12,26 @@ function refreshCart() {
         buttonCart.classList.remove('buttonModal')
         buttonCart.removeAttribute('data-modaltarget')
 
-
-        if (cartLocal != null) {
+        if (JSON.parse(cartLocal) !== null) {
 
             buttonCart.classList.remove('tooltip')
             buttonCart.classList.add('buttonModal')
             buttonCart.dataset.modaltarget = 'cart'
-
             JSON.parse(cartLocal).forEach(e => {
 
                 tbody.innerHTML += cartRowHTML
 
                 let optsName = ''
-                if (e.optName != undefined)
+                if (e.optName !== undefined){
                     optsName = ` Options : ${e.optName}`
+                    optsName = optsName.replace(/,/g, ', ')
+                }
 
                 tbody.lastElementChild.querySelector('.refLabel > .value').innerHTML = e.ref
-                tbody.lastElementChild.querySelector('.productLabel > .value').innerHTML = `${e.name}. ${optsName}`
-                tbody.lastElementChild.querySelector('.priceLabel > .value').innerHTML = e.price
+                tbody.lastElementChild.querySelector('.productLabel > .value').innerHTML = `${e.name} <br><small>${optsName}</small>`
+                tbody.lastElementChild.querySelector('.priceLabel > .value').innerHTML = Number(Math.round(e.price + 'e2') + 'e-2').toFixed(2)
                 tbody.lastElementChild.querySelector('.qtyLabel > .value').innerHTML = e.qty
-                tbody.lastElementChild.querySelector('.totalLabel > .value').innerHTML = (e.price * e.qty).toFixed(2)
+                tbody.lastElementChild.querySelector('.totalLabel > .value').innerHTML = Number(Math.round((e.price * e.qty) + 'e2') + 'e-2').toFixed(2)
 
                 if (e.options.length > 0) {
 
@@ -80,7 +46,7 @@ function refreshCart() {
 
             })
 
-            document.querySelector('.cartPrice').innerHTML = totalPrice.toFixed(2)
+            document.querySelector('.cartPrice').innerHTML = Number(Math.round(totalPrice + 'e2') + 'e-2').toFixed(2)
 
             document.getElementById('buttonCart').querySelector('svg').setAttribute('data-modaltarget', 'cart')
 
@@ -91,35 +57,36 @@ function refreshCart() {
         }
     });
 
-    localStorage.getItem('userLocal') ? saveCart() : null
+    userData !== null ? saveCart() : null
     refreshCounter()
 
 }
 
 async function addCartFromProductPage(e) {
 
-    let productElem = e.closest('.productElem')
+    let productElem = e.closest('[data-template]')
     let productAdd = {}
     let data = []
     let optionsList = []
     let optionsName = []
 
     productAdd = {
-        "ref": productElem.querySelector('#ref').innerHTML,
-        "name": productElem.querySelector('#name').innerHTML,
-        "price": parseFloat(productElem.querySelector('#price').innerHTML),
-        "qty": parseFloat(productElem.querySelector('#qty').children['qtyInput'].value)
+        "ref": productElem.querySelector('[data-prodRef]').innerHTML,
+        "name": productElem.querySelector('[data-prodName]').innerHTML,
+        "price": parseFloat(productElem.querySelector('[data-prodPrice]').innerHTML),
+        "qty": parseFloat(productElem.querySelector('[data-prodqty]').value)
     }
 
     let prodVar = new Promise(resolve => {
         productsData.forEach(prod => {
-            prod.ref === productElem.querySelector('#ref').innerHTML ? resolve(prod.variables) : null
+            prod.ref === productElem.querySelector('[data-prodRef]').innerHTML ? resolve(prod.variables) : null
         })
     })
     Object.getOwnPropertyNames(await prodVar).length > 0 ? productAdd.var = await prodVar : null
 
-    if (productElem.querySelector('#options')) {
-        productElem.querySelectorAll('input').forEach(opt => {
+    if (productElem.querySelector('[data-prodoptions]')) {
+        productElem.querySelectorAll('[data-optProduct]').forEach(opt => {
+
             if ((opt.selected === true || opt.checked === true) && opt.value !== '') {
                 optionsList.push(opt.value)
                 optionsName.push(opt.dataset.name)
@@ -129,8 +96,7 @@ async function addCartFromProductPage(e) {
         productAdd.optName = optionsName
     }
 
-
-    if (!cartLocal) {
+    if (!cartLocal || JSON.parse(cartLocal) === null || cartLocal.length <= 2) {
 
         await data.push(productAdd)
         localStorage.setItem('cartLocal', JSON.stringify(data))
@@ -138,9 +104,8 @@ async function addCartFromProductPage(e) {
 
     } else {
 
-        data = JSON.parse(localStorage.getItem('cartLocal'))
+        data = JSON.parse(cartLocal)
         let newItem = true
-
         data.forEach(e => {
             (productAdd.ref === e.ref && String(productAdd.options) === String(e.options)) ? (e.qty += productAdd.qty, newItem = false) : null;
         })
@@ -151,7 +116,7 @@ async function addCartFromProductPage(e) {
 
 }
 
-async function addCart(ref, qty) {
+async function addCart(ref, qty, opt='') {
     let productAdd = {}
     let data = []
 
@@ -168,7 +133,7 @@ async function addCart(ref, qty) {
         "qty": qty,
         "name": product.name,
         "price": product.price,
-        "options": ''
+        "options": opt
     }
 
     if (!cartLocal) {
@@ -194,9 +159,13 @@ async function addCart(ref, qty) {
 
 function removeCart(ref, opt) {
 
-    let newData = []
-    JSON.parse(cartLocal).forEach(e => (e.ref === ref && String(e.options) === opt) ? null : newData.push(e))
-    newData.length <= 0 ? (localStorage.removeItem('cartLocal'), refreshCart(), hideModal()) : (localStorage.setItem('cartLocal', JSON.stringify(newData)), refreshCart())
+    let newData = [ ]
+    JSON.parse( cartLocal ).forEach( e => {
+        let optList = ''
+        e.options.forEach(op => optList += `${op},`),
+        (e.ref === ref && optList.slice(0, -1) === opt) ? null : newData.push(e)
+    })
+    newData.length <= 0 ? ( localStorage.removeItem( 'cartLocal' ), refreshCart( ), hideModal( ) ) : ( localStorage.setItem( 'cartLocal', JSON.stringify( newData ) ), refreshCart( ) )
 
 }
 
@@ -211,33 +180,37 @@ function refreshCounter() {
 
 function plusMinusProduct(e, type) {
 
-    let refLabel = e.parentElement.querySelector('.refLabel').firstElementChild.innerHTML
-    let refOptions = e.parentElement.querySelector('.optionsList') ? e.parentElement.querySelector('.optionsList').innerHTML : ''
-    let value = type === 'plus' ? parseInt(e.querySelector('.value').innerHTML) + 1 : parseInt(e.querySelector('.value').innerHTML) - 1
+    let refLabel = e.parentElement.querySelector('.refLabel' ).firstElementChild.innerHTML
+    let refOptions = e.parentElement.querySelector('.optionsList' ) ? e.parentElement.querySelector('.optionsList' ).innerHTML : ''
+    let value = type === 'plus' ? parseInt( e.querySelector('.value' ).innerHTML ) + 1 : parseInt( e.querySelector('.value' ).innerHTML ) - 1
 
     value === 0 ? value = 1 : null
 
-    e.querySelector('.value').innerHTML = value
+    e.querySelector('.value' ).innerHTML = value
 
-    cartLocal = JSON.parse(localStorage.getItem('cartLocal'))
-    cartLocal.forEach(e => e.ref === refLabel && String(e.options) === refOptions ? e.qty = value : null)
-    localStorage.setItem('cartLocal', JSON.stringify(cartLocal))
-    refreshCart()
+    cartLocal = JSON.parse( localStorage.getItem( 'cartLocal' ) )
+    cartLocal.forEach( e => {
+        let optList = ''
+        e.options.forEach(op => optList += `${op},`)
+        e.ref === refLabel && optList.slice(0, -1) === refOptions ? e.qty = value : null
+    })
+
+    localStorage.setItem( 'cartLocal', JSON.stringify( cartLocal ) )
+    refreshCart( )
 
 }
 
-function saveCart() {
-
+async function saveCart() {
     let cartLocal = localStorage.getItem('cartLocal') ? localStorage.getItem('cartLocal') : 'null'
-    let userLocal = JSON.parse(localStorage.getItem('userLocal'))
-
-    fetch(`/api?action=cart?token=${userLocal.token}&email=${userLocal.email}&state=saveCart`, {
-        method: "POST",
-        headers: {
-            "Content-type": "application/json"
-        },
-        body: cartLocal,
-    })
+    if( userData !== null){
+        await fetch(`/api?action=cart&token=${userData.token}&email=${userData.email}&state=saveCart`, {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: cartLocal,
+        })
+    }
 
 }
 
@@ -260,6 +233,8 @@ function getCart() {
             showPushNotification('error', "Session expirée")
         } else if (data !== 'null') {
             localStorage.setItem('cartLocal', JSON.stringify(data))
+        } else if (data === null ){
+            localStorage.removeItem('cartLocal')
         }
     }).then(() => refreshCart())
 

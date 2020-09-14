@@ -20,14 +20,15 @@ export default class Shop {
      */
     async cart(state, primaryKey, data) {
         try {
+            let cart = JSON.stringify(data) === 'null' ? 'null' : JSON.stringify(data)
             let resp = state === 'saveCart'
-                ? await db.editDocument('users', primaryKey, data[0])
+                ? await db.editDocument('users', primaryKey, `{"cart":${cart}}`)
                 : state === 'getCart'
                     ? await db.getDocument('users', primaryKey)
                     : null
             return typeof resp === 'object' ? resp.cart : resp
-        } catch (e) {
-            logSys(e, 'error')
+        } catch (error) {
+            logSys(`here = ${error}`, 'error')
         }
     }
 

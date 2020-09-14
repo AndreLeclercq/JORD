@@ -44,6 +44,7 @@ const scripts = [
     'src/js/cart.js',
     'src/js/account.js',
     'src/js/purchase.js',
+    'src/js/events.js'
 ]
 
 scripts.push('assets/script.js')

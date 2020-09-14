@@ -1,6 +1,6 @@
 {
   "name": "jord",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "Minimal eShop Single Page Application system without framework or useless dependencies.",
   "main": "server.js",
   "type": "module",
@@ -18,8 +18,8 @@
   "license": "GNU GPLv3",
   "devDependencies": {
     "argon2": "^0.26.2",
-    "mongodb": "^3.5.9",
-    "nodemailer": "^6.4.10",
+    "mongodb": "^3.6.2",
+    "nodemailer": "^6.4.11",
     "sass": "^1.26.10",
     "terser": "^4.8.0"
   },
