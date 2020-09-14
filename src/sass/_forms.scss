@@ -12,7 +12,21 @@
   display:none!important;
 }
 
-[type="number"] {
+.input-sm[type="number"] {
   max-width:50px;
   text-align: center;
+}
+
+.input-25w[type="number"] {
+  max-width:25%;
+}
+
+.input-50w[type="number"] {
+  max-width:50%;
+}
+.input-75w[type="number"] {
+  max-width:75%;
+}
+.input-100w[type="number"] {
+  max-width:100%;
 }

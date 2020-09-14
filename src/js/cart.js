@@ -82,14 +82,17 @@ async function addCartFromProductPage(e) {
             prod.ref === productElem.querySelector('[data-prodRef]').innerHTML ? resolve(prod.variables) : null
         })
     })
+
     Object.getOwnPropertyNames(await prodVar).length > 0 ? productAdd.var = await prodVar : null
 
     if (productElem.querySelector('[data-prodoptions]')) {
         productElem.querySelectorAll('[data-optProduct]').forEach(opt => {
-
-            if ((opt.selected === true || opt.checked === true) && opt.value !== '') {
+            if ((opt.selected === true || opt.checked === true) && opt.value !== '' ){
                 optionsList.push(opt.value)
                 optionsName.push(opt.dataset.name)
+            } else if( opt.type === 'number' && opt.value !== '' ){
+                optionsList.push(`${opt.id} : ${opt.value}`)
+                optionsName.push(`${opt.placeholder} : ${opt.value}`)
             }
         })
         productAdd.options = optionsList

@@ -89,7 +89,25 @@ function buildProductPage() {
                             divElem.querySelector('.radioGroup').innerHTML = divElem.querySelector('.radioGroup').innerHTML.concat(optRadio.innerHTML)
                         })
                         divElem.querySelector('input').defaultChecked = true
+                    } else if (grp.type === 'numb') {
+                        divElem.querySelector('.numbGroup').innerHTML = ''
+                        groupValues.forEach(e => {
+                            optionsList[e.ref] = e.price
+                            let optNumb = document.createElement('div')
+                            optNumb.innerHTML = optGrpHtml
+                            let label = optNumb.querySelector('label')
+                            let input = optNumb.querySelector('input')
+                            label.innerHTML = e.name
+                            label.for = e.ref
+                            input.id = e.ref
+                            input.placeholder = e.name
+                            input.defaultValue = e.default
+                            input.min = e.min
+                            input.max = e.max
+                            divElem.querySelector('.numbGroup').innerHTML = divElem.querySelector('.numbGroup').innerHTML.concat(optNumb.innerHTML)
+                        })
                     }
+
                     divElem.querySelector('.title').innerHTML = grp.name
                     document.querySelector('[data-prodOptions]').innerHTML = document.querySelector('[data-prodOptions]').innerHTML.concat(divElem.innerHTML)
 
@@ -110,6 +128,8 @@ function calcProductPrice(price, options) {
     document.querySelectorAll('[data-optProduct]').forEach(opt => {
         if ((opt.selected === true || opt.checked === true) && opt.value !== '')
             totalPrice += parseFloat(options[opt.value])
+        else if (opt.type === 'number' && opt.value !== '')
+            totalPrice += parseFloat(opt.value) * parseFloat(options[opt.id])
     })
     document.querySelector('[data-prodPrice]').innerHTML = Number(Math.round((totalPrice * document.querySelector('[data-prodQty]').value) + 'e2') + 'e-2').toFixed(2)
 }
