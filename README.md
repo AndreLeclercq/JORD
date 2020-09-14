@@ -38,6 +38,18 @@ This is a personnal project, but if you want you can use it with love and respec
 ## Change log and Todo List
 Todo list and progress of project [here](https://github.com/AndreLeclercq/JORD/projects/2).
 
+#### Log 0.5.0 (14/09/2020)
+Be careful, the documentation (docs/README.md) was not update, check the todo list [here](https://github.com/AndreLeclercq/JORD/projects/2). 
+* Re Write Server Side and Client Side
+    * Calculate products price server Side
+    * Re write the project page and product card
+    * Re write the cart
+    * Re write Account
+* Fix all bugs from 0.4.0
+* Update Deps
+    * nodemailer@6.4.11
+    * mongodb@3.6.2
+
 #### Log 0.4.0 (06/08/2020)
 * Re Organize project Directories
     * The `assets` directory into `public` move to root folder

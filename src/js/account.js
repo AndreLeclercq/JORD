@@ -1,52 +1,23 @@
-document.addEventListener('initWebsite', function () {
+// document.addEventListener('pageChange', () => {
+//
+//     document.querySelectorAll('.accountUserPage').forEach(elt => {
+//
+//         elt.innerHTML = userProfilHTML
+//
+//         getUserProfilPage(document.getElementById('accountUserPage'))
+//
+//     })
+//
+// })
 
-    let userLocal = localStorage.getItem('userLocal')
 
-    if (userLocal) {
-
-        userIsLog()
-
-    } else {
-
-        document.getElementById('loginRegister').firstElementChild.innerHTML = loginLogoutFormHTML
-
-        loginRegister('modal')
-
-        localStorage.getItem('cartLocal') ? refreshCart() : null
-
-    }
-
-    document.querySelectorAll('.accountUserPage').forEach(elt => {
-
-        elt.innerHTML = userProfilHTML
-
-        getUserProfilPage(document.getElementById('accountUserPage'))
-
-    })
-
-    console.log(productsData)
-
-})
-
-document.addEventListener('pageChange', () => {
-
-    document.querySelectorAll('.accountUserPage').forEach(elt => {
-
-        elt.innerHTML = userProfilHTML
-
-        getUserProfilPage(document.getElementById('accountUserPage'))
-
-    })
-
-})
-
-function getUserProfilPage(content) {
+async function getUserProfilPage(content) {
 
     writeData()
 
-    let userLocal = JSON.parse(localStorage.getItem('userLocal'))
+    // let userLocal = JSON.parse(localStorage.getItem('userLocal'))
 
-    content.addEventListener('click', e => {
+    content.addEventListener('click', async e => {
 
         if (e.target.classList.contains('editProfil')) {
 
@@ -67,7 +38,7 @@ function getUserProfilPage(content) {
         if (e.target.closest('.saveProfil')) {
 
             let dataSend = {
-                'email': userLocal.email,
+                'email': userData.email,
                 'firstname': document.getElementById('firstnameField').nextElementSibling.value,
                 'lastname': document.getElementById('lastnameField').nextElementSibling.value,
                 'phone': document.getElementById('phoneField').nextElementSibling.value,
@@ -79,26 +50,24 @@ function getUserProfilPage(content) {
                 'shipping_town': document.getElementById('townShippingField').nextElementSibling.value,
             }
 
-            fetch(`/api?action=updateUser&token=${userLocal.token}`, {
+            let fetchRes = await fetch(`/api?action=updateUser&token=${userData.token}`, {
                 method: "POST",
                 headers: {
                     "Content-type": "application/json"
                 },
                 body: JSON.stringify(dataSend),
             })
-                .then(res => {
-                    return res.json()
-                }).then(data => {
-                if (data === false) {
-                    showPushNotification('error', "Session expirée")
-                } else {
-                    dataSend.token = userLocal.token
-                    localStorage.setItem('userLocal', JSON.stringify(dataSend))
-                    showPushNotification('success', "Informations sauvegardées")
-                    writeData()
-                    cancelEdit()
-                }
-            })
+            let data = await fetchRes.json()
+            if (data === false) {
+                showPushNotification('error', "Session expirée")
+            } else {
+                dataSend.token = userData.token
+                userData = dataSend
+                localStorage.setItem('userLocal', JSON.stringify(dataSend))
+                showPushNotification('success', "Informations sauvegardées")
+                writeData()
+                cancelEdit()
+            }
         }
 
         if (e.target.classList.contains('editPassword')) {
@@ -107,33 +76,29 @@ function getUserProfilPage(content) {
             let confirmPass = document.getElementById('confirmPassword').value
             let oldPass = document.getElementById('oldPassword').value
             let email = document.getElementById('emailField').innerHTML
-            let token = userLocal.token
+            let token = userData.token
 
             const regexPatPwd = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9!@#$%^&*()_+\-=]*.{8,25}$/
             const pwdCheck = regexPatPwd.test(newPass)
 
             pwdCheck ? editPassword() : showPushNotification('error', "Le mot de passe doit contenir 8 à 25 caractères et au moins 1 majuscule, 1 minuscule et 1 chiffre.")
 
-            function editPassword() {
+            async function editPassword() {
                 if (newPass === confirmPass) {
 
-                    fetch(`/api?action=updatePwd&email=${email}&password=${encodeURIComponent(oldPass)}&newPassword=${encodeURIComponent(newPass)}&token=${token}`)
-                        .then(res => {
-                            return res.json()
-                        })
-                        .then(data => {
-                            if (data === 'user not found') {
-                                showPushNotification('error', "Email incorrect")
-                            } else if (data === 'incorrect password') {
-                                showPushNotification('error', "Mauvais mot de passe")
-                            } else if (data === 'edited document') {
-                                showPushNotification('success', "Modification du mot de passe réussi")
-                                document.getElementById('newPassword').value = ''
-                                document.getElementById('confirmPassword').value = ''
-                                document.getElementById('oldPassword').value = ''
-                                cancelEdit()
-                            }
-                        })
+                    let fetchRes = await fetch(`/api?action=updatePwd&email=${email}&password=${encodeURIComponent(oldPass)}&newPassword=${encodeURIComponent(newPass)}&token=${token}`)
+                    let data = await fetchRes.json()
+                    if (data === 'user not found') {
+                        showPushNotification('error', "Email incorrect")
+                    } else if (data === 'incorrect password') {
+                        showPushNotification('error', "Mauvais mot de passe")
+                    } else if (data === 'edited document') {
+                        showPushNotification('success', "Modification du mot de passe réussi")
+                        document.getElementById('newPassword').value = ''
+                        document.getElementById('confirmPassword').value = ''
+                        document.getElementById('oldPassword').value = ''
+                        cancelEdit()
+                    }
                 } else {
                     showPushNotification('error', "Le nouveau mot de passe n'est pas identique à la confirmation")
                 }
@@ -165,20 +130,16 @@ function cancelEdit() {
 }
 
 function writeData() {
-
-    let userLocal = localStorage.getItem('userLocal')
-    userLocal = JSON.parse(userLocal)
-
-    document.getElementById('emailField').innerHTML = userLocal.email
-    document.getElementById('firstnameField').innerHTML = document.getElementById('firstnameField').nextElementSibling.value = userLocal.firstname
-    document.getElementById('lastnameField').innerHTML = document.getElementById('lastnameField').nextElementSibling.value = userLocal.lastname
-    document.getElementById('phoneField').innerHTML = document.getElementById('phoneField').nextElementSibling.value = userLocal.phone
-    document.getElementById('addressField').innerHTML = document.getElementById('addressField').nextElementSibling.value = userLocal.address
-    document.getElementById('postalcodeField').innerHTML = document.getElementById('postalcodeField').nextElementSibling.value = userLocal.postalCode
-    document.getElementById('townField').innerHTML = document.getElementById('townField').nextElementSibling.value = userLocal.town
-    document.getElementById('addressShippingField').innerHTML = document.getElementById('addressShippingField').nextElementSibling.value = userLocal.shipping_address
-    document.getElementById('postalcodeShippingField').innerHTML = document.getElementById('postalcodeShippingField').nextElementSibling.value = userLocal.shipping_postalCode
-    document.getElementById('townShippingField').innerHTML = document.getElementById('townShippingField').nextElementSibling.value = userLocal.shipping_town
+    document.getElementById('emailField').innerHTML = userData.email
+    document.getElementById('firstnameField').innerHTML = document.getElementById('firstnameField').nextElementSibling.value = userData.firstname
+    document.getElementById('lastnameField').innerHTML = document.getElementById('lastnameField').nextElementSibling.value = userData.lastname
+    document.getElementById('phoneField').innerHTML = document.getElementById('phoneField').nextElementSibling.value = userData.phone
+    document.getElementById('addressField').innerHTML = document.getElementById('addressField').nextElementSibling.value = userData.address
+    document.getElementById('postalcodeField').innerHTML = document.getElementById('postalcodeField').nextElementSibling.value = userData.postalCode
+    document.getElementById('townField').innerHTML = document.getElementById('townField').nextElementSibling.value = userData.town
+    document.getElementById('addressShippingField').innerHTML = document.getElementById('addressShippingField').nextElementSibling.value = userData.shipping_address
+    document.getElementById('postalcodeShippingField').innerHTML = document.getElementById('postalcodeShippingField').nextElementSibling.value = userData.shipping_postalCode
+    document.getElementById('townShippingField').innerHTML = document.getElementById('townShippingField').nextElementSibling.value = userData.shipping_town
 
 }
 
@@ -189,6 +150,7 @@ function userIsLog() {
     document.getElementById('logoutMenu').addEventListener('click', e => {
         e.preventDefault()
         localStorage.removeItem('userLocal')
+        userData = ''
         userIsNotLog()
         showPushNotification('success', "Déconnection réussi !")
         document.dispatchEvent(dbReady)
