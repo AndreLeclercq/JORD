@@ -117,8 +117,8 @@ function buildProductPage() {
             } else
                 document.querySelector('[data-prodOptions]').remove()
 
-            calcProductPrice(elt.price, optionsList)
-            document.querySelector('[data-template="product"]').addEventListener('input', () => calcProductPrice(elt.price, optionsList))
+            document.querySelector('[data-prodPrice]').innerHTML = Number(Math.round((calcProductPrice(elt.price, optionsList) * document.querySelector('[data-prodQty]').value) + 'e2') + 'e-2').toFixed(2)
+            document.querySelector('[data-template="product"]').addEventListener('input', () => document.querySelector('[data-prodPrice]').innerHTML = Number(Math.round((calcProductPrice(elt.price, optionsList) * document.querySelector('[data-prodQty]').value) + 'e2') + 'e-2').toFixed(2))
         }
 
     })
@@ -133,7 +133,7 @@ function calcProductPrice(price, options) {
         else if (opt.type === 'number' && opt.value !== '')
             totalPrice += parseFloat(opt.value) * parseFloat(options[opt.id])
     })
-    document.querySelector('[data-prodPrice]').innerHTML = Number(Math.round((totalPrice * document.querySelector('[data-prodQty]').value) + 'e2') + 'e-2').toFixed(2)
+    return Number(Math.round((totalPrice) + 'e2') + 'e-2').toFixed(2)
 }
 
 function getProductsByCat() {
@@ -148,7 +148,6 @@ function getProductsByCat() {
         productsData.forEach(prod => {
 
             let thisProd
-
             cat !== 'all' && prod.category === cat && parseFloat(prod.access) === 0 ? thisProd = prod : cat === 'all' ? thisProd = prod : null
 
             if (thisProd && (counter <= count || count === -1)) {
@@ -161,7 +160,7 @@ function getProductsByCat() {
                 prodCardHTML.querySelector('[data-productName]').innerHTML = thisProd.name
                 thisProd.images[0] ? prodImg = thisProd.images[0] : prodImg = 'assets/images/aucune-image.png'
                 prodCardHTML.querySelector('[data-productImg]').src = prodImg
-                prodCardHTML.querySelector('[data-productPrice]').innerHTML = `${thisProd.price}€ TTC`
+                prodCardHTML.querySelector('[data-productPrice]').innerHTML = prod.options ? `<small>À partir de</small> ${thisProd.price}€ TTC` : `${thisProd.price}€ TTC`
                 catNode.insertAdjacentHTML('beforeend', prodCardHTML.innerHTML)
             }
         })
