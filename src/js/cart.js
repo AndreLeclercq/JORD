@@ -73,7 +73,7 @@ async function addCartFromProductPage(e) {
     productAdd = {
         "ref": productElem.querySelector('[data-prodRef]').innerHTML,
         "name": productElem.querySelector('[data-prodName]').innerHTML,
-        "price": parseFloat(productElem.querySelector('[data-prodPrice]').innerHTML),
+        "price": parseFloat(productElem.querySelector('[data-prodPrice]').innerHTML) / parseFloat(productElem.querySelector('[data-prodqty]').value),
         "qty": parseFloat(productElem.querySelector('[data-prodqty]').value)
     }
 
