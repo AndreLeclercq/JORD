@@ -97,7 +97,9 @@ function buildProductPage() {
                             optNumb.innerHTML = optGrpHtml
                             let label = optNumb.querySelector('label')
                             let input = optNumb.querySelector('input')
-                            label.innerHTML = e.name
+                            e.required
+                                ? (input.required = true, label.innerHTML = `${e.name}*`, document.getElementById('requiredLegend').hidden = false)
+                                : (input.required = false, label.innerHTML = e.name)
                             label.for = e.ref
                             input.id = e.ref
                             input.placeholder = e.name
