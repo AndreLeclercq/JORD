@@ -10,7 +10,9 @@ window.addEventListener('pageChange', () => {
     document.querySelector('[data-filtersList]') ? enableFilters() : null
 
     // Add Cart event
-    document.getElementById('addCart') ? document.getElementById('addCart').addEventListener('click', e => addCartFromProductPage(e.target)) : null
+    document.getElementById('addCart')
+        ? document.getElementById('addCart').addEventListener('click', e => (addCartFromProductPage(e.target)))
+        : null
 
     document.querySelectorAll('.accountUserPage').forEach(elt => {
         elt.innerHTML = userProfilHTML

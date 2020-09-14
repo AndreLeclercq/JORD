@@ -51,12 +51,12 @@
       "values": [
         {
           "ref": "this",
-          "price": "05.00",
+          "price": "00.00",
           "name": "This"
         },
         {
           "ref": "that",
-          "price": "00.00",
+          "price": "05.00",
           "name": "That"
         }
       ]
@@ -70,6 +70,22 @@
           "ref": "with",
           "price": "15.00",
           "name": "With"
+        }
+      ]
+    },
+    "sizes": {
+      "name": "Sizes",
+      "ref": "sizes",
+      "type": "numb",
+      "values": [
+        {
+          "ref": "length",
+          "price": ".14",
+          "name": "Length",
+          "min": "1000",
+          "max": "8000",
+          "default": "1000",
+          "required": true
         }
       ]
     }
@@ -132,12 +148,12 @@
       "values": [
         {
           "ref": "this",
-          "price": "05.00",
+          "price": "00.00",
           "name": "This"
         },
         {
           "ref": "that",
-          "price": "00.00",
+          "price": "05.00",
           "name": "That"
         }
       ]
@@ -213,12 +229,12 @@
       "values": [
         {
           "ref": "this",
-          "price": "05.00",
+          "price": "00.00",
           "name": "This"
         },
         {
           "ref": "that",
-          "price": "00.00",
+          "price": "05.00",
           "name": "That"
         }
       ]
@@ -297,12 +313,12 @@
       "values": [
         {
           "ref": "this",
-          "price": "05.00",
+          "price": "00.00",
           "name": "This"
         },
         {
           "ref": "that",
-          "price": "00.00",
+          "price": "05.00",
           "name": "That"
         }
       ]
@@ -381,12 +397,12 @@
       "values": [
         {
           "ref": "this",
-          "price": "05.00",
+          "price": "00.00",
           "name": "This"
         },
         {
           "ref": "that",
-          "price": "00.00",
+          "price": "05.00",
           "name": "That"
         }
       ]
@@ -464,12 +480,12 @@
       "values": [
         {
           "ref": "this",
-          "price": "05.00",
+          "price": "00.00",
           "name": "This"
         },
         {
           "ref": "that",
-          "price": "00.00",
+          "price": "05.00",
           "name": "That"
         }
       ]
@@ -545,12 +561,12 @@
       "values": [
         {
           "ref": "this",
-          "price": "05.00",
+          "price": "00.00",
           "name": "This"
         },
         {
           "ref": "that",
-          "price": "00.00",
+          "price": "05.00",
           "name": "That"
         }
       ]
@@ -626,12 +642,12 @@
       "values": [
         {
           "ref": "this",
-          "price": "05.00",
+          "price": "00.00",
           "name": "This"
         },
         {
           "ref": "that",
-          "price": "00.00",
+          "price": "05.00",
           "name": "That"
         }
       ]
@@ -707,12 +723,12 @@
       "values": [
         {
           "ref": "this",
-          "price": "05.00",
+          "price": "00.00",
           "name": "This"
         },
         {
           "ref": "that",
-          "price": "00.00",
+          "price": "05.00",
           "name": "That"
         }
       ]
