@@ -25,7 +25,6 @@ function showPushNotification(type, msg) {
     notice.querySelector('.msg').innerText = ''
     notice.querySelector('.msg').innerText = msg
 
-    console.log(document.getElementById('wrapper').firstElementChild)
     !document.getElementById('notice') ? document.getElementById('wrapper').firstElementChild.appendChild(notice) : null
 
     notice.classList.toggle('hide')

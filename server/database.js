@@ -17,7 +17,7 @@ export default class Database {
             this.name = config.global.dbName
             this.connection().then()
         } catch (error) {
-            logSys(error, 'error')
+            logSys(`database.js > constructor() || ${error}`, 'error')
             return error
         }
     }
@@ -37,7 +37,7 @@ export default class Database {
             await this.client.connect()
             this.db = this.client.db(this.name)
         } catch (error) {
-            await logSys(error, 'error')
+            await logSys(`database.js > connection() || ${error}`, 'error')
             return error
         }
     }
@@ -52,7 +52,7 @@ export default class Database {
         try {
             return await this.db.collection(collection).find().toArray()
         } catch (error) {
-            await logSys(error, 'error')
+            await logSys(`database.js > getCollection() || ${error}`, 'error')
             return error
         }
     }
@@ -80,7 +80,7 @@ export default class Database {
                 return 'create document'
             }
         } catch (error) {
-            await logSys(error, 'error')
+            await logSys(`database.js > createDocument() || ${error}`, 'error')
             return error
         }
     }
@@ -95,12 +95,12 @@ export default class Database {
      */
     async editDocument(collection, primaryKey, fields) {
         try {
-            console.log(fields)
-            await this.db.collection(collection).updateOne(primaryKey, {$set: JSON.parse(fields)})
+            this.editFields = typeof fields === "object" ? fields : JSON.parse(fields)
+            await this.db.collection(collection).updateOne(primaryKey, {$set: this.editFields})
             await logSys(`Document EDIT with success in ${collection}`, 'success')
             return 'edited document'
         } catch (error) {
-            await logSys(error, 'error')
+            await logSys(`database.js > editDocument() || ${error}`, 'error')
         }
     }
 
@@ -116,7 +116,7 @@ export default class Database {
             this.document = await this.db.collection(collection).find(primaryKey).toArray()
             return this.document[0] === undefined ? 'document not found' : this.document[0]
         } catch (error) {
-            await logSys(error, 'error')
+            await logSys(`database.js > getDocument() || ${error}`, 'error')
         }
     }
 }

@@ -99,7 +99,7 @@ async function handleRequest(req, res) {
         } else if (req.param.action === 'updatePwd') {
             if (await token.check(req.param.token)) {
                 let user = new User()
-                await prepareResponse(res, await user.user.editPwd(await user.editPwd(req.param)))
+                await prepareResponse(res, await user.editPwd(req.param))
             } else {
                 await prepareResponse(res, false)
             }

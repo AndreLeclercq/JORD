@@ -130,9 +130,6 @@ function cancelEdit() {
 }
 
 function writeData() {
-
-    console.log(`writeData: ${userData}`)
-
     document.getElementById('emailField').innerHTML = userData.email
     document.getElementById('firstnameField').innerHTML = document.getElementById('firstnameField').nextElementSibling.value = userData.firstname
     document.getElementById('lastnameField').innerHTML = document.getElementById('lastnameField').nextElementSibling.value = userData.lastname
