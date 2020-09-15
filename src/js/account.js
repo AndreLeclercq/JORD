@@ -1,22 +1,7 @@
-// document.addEventListener('pageChange', () => {
-//
-//     document.querySelectorAll('.accountUserPage').forEach(elt => {
-//
-//         elt.innerHTML = userProfilHTML
-//
-//         getUserProfilPage(document.getElementById('accountUserPage'))
-//
-//     })
-//
-// })
-
 
 async function getUserProfilPage(content) {
 
     writeData()
-
-    // let userLocal = JSON.parse(localStorage.getItem('userLocal'))
-
     content.addEventListener('click', async e => {
 
         if (e.target.classList.contains('editProfil')) {
@@ -131,15 +116,15 @@ function cancelEdit() {
 
 function writeData() {
     document.getElementById('emailField').innerHTML = userData.email
-    document.getElementById('firstnameField').innerHTML = document.getElementById('firstnameField').nextElementSibling.value = userData.firstname
-    document.getElementById('lastnameField').innerHTML = document.getElementById('lastnameField').nextElementSibling.value = userData.lastname
-    document.getElementById('phoneField').innerHTML = document.getElementById('phoneField').nextElementSibling.value = userData.phone
-    document.getElementById('addressField').innerHTML = document.getElementById('addressField').nextElementSibling.value = userData.address
-    document.getElementById('postalcodeField').innerHTML = document.getElementById('postalcodeField').nextElementSibling.value = userData.postalCode
-    document.getElementById('townField').innerHTML = document.getElementById('townField').nextElementSibling.value = userData.town
-    document.getElementById('addressShippingField').innerHTML = document.getElementById('addressShippingField').nextElementSibling.value = userData.shipping_address
-    document.getElementById('postalcodeShippingField').innerHTML = document.getElementById('postalcodeShippingField').nextElementSibling.value = userData.shipping_postalCode
-    document.getElementById('townShippingField').innerHTML = document.getElementById('townShippingField').nextElementSibling.value = userData.shipping_town
+    document.getElementById('firstnameField').innerHTML = document.getElementById('firstnameField').nextElementSibling.value = userData.firstname === undefined ? '' : userData.firstname
+    document.getElementById('lastnameField').innerHTML = document.getElementById('lastnameField').nextElementSibling.value = userData.lastname === undefined ? '' : userData.lastname
+    document.getElementById('phoneField').innerHTML = document.getElementById('phoneField').nextElementSibling.value = userData.phone === undefined ? '' : userData.phone
+    document.getElementById('addressField').innerHTML = document.getElementById('addressField').nextElementSibling.value = userData.address === undefined ? '' : userData.address
+    document.getElementById('postalcodeField').innerHTML = document.getElementById('postalcodeField').nextElementSibling.value = userData.postalCode === undefined ? '' : userData.postalCode
+    document.getElementById('townField').innerHTML = document.getElementById('townField').nextElementSibling.value = userData.town === undefined ? '' : userData.town
+    document.getElementById('addressShippingField').innerHTML = document.getElementById('addressShippingField').nextElementSibling.value = userData.shipping_address === undefined ? '' : userData.shipping_address
+    document.getElementById('postalcodeShippingField').innerHTML = document.getElementById('postalcodeShippingField').nextElementSibling.value = userData.shipping_postalCode === undefined ? '' : userData.shipping_postalCode
+    document.getElementById('townShippingField').innerHTML = document.getElementById('townShippingField').nextElementSibling.value = userData.shipping_town === undefined ? '' : userData.shipping_town
 
 }
 
@@ -167,7 +152,7 @@ function userIsNotLog() {
 
 }
 
-function loginRegister(location) {
+async function loginRegister(location) {
 
     let loginForms = document.querySelectorAll('.loginRegisterForm')
 
@@ -213,22 +198,18 @@ function loginRegister(location) {
 
                         param = param.slice(0, -1)
 
-                        fetch(`api?action=login&${param}`)
-                            .then(res => {
-                                return res.json()
-                            })
-                            .then(data => {
-                                if (data === 'document not found') {
-                                    showPushNotification('error', "Email incorrect")
-                                } else if (data === 'password incorrect') {
-                                    showPushNotification('error', "Mauvais mot de passe")
-                                } else if (typeof data === 'object') {
-                                    localStorage.setItem('userLocal', JSON.stringify(data))
-                                    showPushNotification('success', "Connexion réussi !")
-                                    location === 'modal' ? hideModal() : purchase('step2')
-                                    userIsLog()
-                                }
-                            })
+                        let fetchResp = await fetch(`api?action=login&${param}`)
+                        let data = await fetchResp.json()
+                        if (data === 'document not found') {
+                            showPushNotification('error', "Email incorrect")
+                        } else if (data === 'password incorrect') {
+                            showPushNotification('error', "Mauvais mot de passe")
+                        } else if (typeof data === 'object') {
+                            localStorage.setItem('userLocal', JSON.stringify(data))
+                            showPushNotification('success', "Connexion réussi !")
+                            location === 'modal' ? hideModal() : purchase('step2')
+                            userIsLog()
+                        }
                     } else {
 
                         let dataSend = {}
@@ -244,18 +225,14 @@ function loginRegister(location) {
 
                         if (pwdCheck && dataSend.password === dataSend.confirmPassword) {
                             param = param.slice(0, -1)
-
-                            fetch(`api?action=register&${param}`)
-                                .then(res => {
-                                    return res.json()
-                                }).then(data => {
-                                if (data === 'already existing document') {
-                                    showPushNotification('error', "Adresse email déjà utilisée")
-                                } else if (data === 'create document') {
-                                    showPushNotification('success', "Compte créé, vous pouvez vous connecter")
-                                    hideModal()
-                                }
-                            })
+                            let fetchResp = await fetch(`api?action=register&${param}`)
+                            let data = await fetchResp.json()
+                            if (data === 'already existing document') {
+                                showPushNotification('error', "Adresse email déjà utilisée")
+                            } else if (data === 'create document') {
+                                showPushNotification('success', "Compte créé, vous pouvez vous connecter")
+                                hideModal()
+                            }
                         }
                     }
                 }

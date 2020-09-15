@@ -70,8 +70,8 @@ export default class Database {
      */
     async createDocument(collection, primaryKey, fields) {
         try {
-            this.document = await this.db.collection(collection).find(primaryKey)
-            if (this.document.length !== undefined) {
+            this.document = await this.getDocument(collection, primaryKey)
+            if (JSON.stringify(this.document).length > 20) {
                 return 'already existing document'
             } else {
                 await this.db.collection(collection).insertOne(fields, error => {
