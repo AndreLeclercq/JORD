@@ -35,9 +35,10 @@ export default class Email {
             html: ({path: `./public/assets/views/email/${data.textFile}.html`})
         }
 
-        await this.transporter.sendMail(this.message, function (err, res) {
-            if (err) {
-                logSys(err, 'error')
+        await this.transporter.sendMail(this.message, function (error, res) {
+            if (error) {
+                let err = new Error()
+                logSys((`${err.stack}\n${error}`), 'error')
             } else {
                 logSys('EMAIL: Email SEND', 'success')
                 logSys(`EMAIL: Response >> ${res.response}`)

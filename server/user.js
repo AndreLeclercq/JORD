@@ -18,9 +18,14 @@ export default class User {
     async createUser(data) {
         try {
             data.password = await argon2.hash(data.password)
-            return await db.createDocument('users', {email: data.email}, JSON.stringify(data))
+            delete data.action
+            delete data.confirmPassword
+            delete data.monprenom
+            delete data.monadresse
+            return await db.createDocument('users', {email: data.email}, data)
         } catch (error) {
-            await logSys(`user.js > createuser || ${error}`, 'error')
+            let err = new Error()
+            await logSys((`${err.stack}\n${error}`), 'error')
             return error
         }
     }
@@ -35,7 +40,8 @@ export default class User {
         try {
             return await db.editDocument('users', {email: data.email}, data)
         } catch (error) {
-            await logSys(`user.js > editUser || ${error}`, 'error')
+            let err = new Error()
+            await logSys((`${err.stack}\n${error}`), 'error')
             return error
         }
     }
@@ -53,7 +59,8 @@ export default class User {
                 ? await db.editDocument('users', {email: data.email}, {password: await argon2.hash(data.newPassword)})
                 : 'old password invalid'
         } catch (error) {
-            await logSys(`user.js > editPwd || ${error}`, 'error')
+            let err = new Error()
+            await logSys((`${err.stack}\n${error}`), 'error')
             return error
         }
     }
@@ -88,7 +95,8 @@ export default class User {
             } else
                 return this.document
         } catch (error) {
-            await logSys(`user.js > login || ${error}`, 'error')
+            let err = new Error()
+            await logSys((`${err.stack}\n${error}`), 'error')
             return error
         }
     }
