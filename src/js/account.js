@@ -214,7 +214,7 @@ async function loginRegister(location) {
 
                         let dataSend = {}
 
-                        for (let [key, value] of data.entries()) {
+                        for (let [key, value] of dataForm.entries()) {
                             dataSend[key] = value
                             param = param.concat(`${key}=${encodeURIComponent(value)}&`)
                         }
