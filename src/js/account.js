@@ -189,10 +189,10 @@ async function loginRegister(location) {
                 let param = ''
 
                 if (elt.target.monprenom.value === '' & elt.target.monadresse.value === 'ceci est mon adresse') {
-                    let data = new FormData(elt.target)
+                    let dataForm = new FormData(elt.target)
 
                     if (buttonSubmit.classList.contains('loginSubmit')) {
-                        for (let [key, value] of data.entries()) {
+                        for (let [key, value] of dataForm.entries()) {
                             param = param.concat(`${key}=${encodeURIComponent(value)}&`)
                         }
 
