@@ -38,6 +38,13 @@ This is a personnal project, but if you want you can use it with love and respec
 ## Change log and Todo List
 Todo list and progress of project [here](https://github.com/AndreLeclercq/JORD/projects/2).
 
+#### Log 0.6.0 (14/09/2020)
+Small update but... you know...docs still not update :(
+* Add input number in options product form (for size by example)
+    * HTML structure
+    * Show on page
+    * Calc price auto
+
 #### Log 0.5.0 (14/09/2020)
 Be careful, the documentation (docs/README.md) was not update, check the todo list [here](https://github.com/AndreLeclercq/JORD/projects/2). 
 * Re Write Server Side and Client Side

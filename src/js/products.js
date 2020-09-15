@@ -89,7 +89,27 @@ function buildProductPage() {
                             divElem.querySelector('.radioGroup').innerHTML = divElem.querySelector('.radioGroup').innerHTML.concat(optRadio.innerHTML)
                         })
                         divElem.querySelector('input').defaultChecked = true
+                    } else if (grp.type === 'numb') {
+                        divElem.querySelector('.numbGroup').innerHTML = ''
+                        groupValues.forEach(e => {
+                            optionsList[e.ref] = e.price
+                            let optNumb = document.createElement('div')
+                            optNumb.innerHTML = optGrpHtml
+                            let label = optNumb.querySelector('label')
+                            let input = optNumb.querySelector('input')
+                            e.required
+                                ? (input.required = true, label.innerHTML = `${e.name}*`, document.getElementById('requiredLegend').hidden = false)
+                                : (input.required = false, label.innerHTML = e.name)
+                            label.for = e.ref
+                            input.id = e.ref
+                            input.placeholder = e.name
+                            input.defaultValue = e.default
+                            input.min = e.min
+                            input.max = e.max
+                            divElem.querySelector('.numbGroup').innerHTML = divElem.querySelector('.numbGroup').innerHTML.concat(optNumb.innerHTML)
+                        })
                     }
+
                     divElem.querySelector('.title').innerHTML = grp.name
                     document.querySelector('[data-prodOptions]').innerHTML = document.querySelector('[data-prodOptions]').innerHTML.concat(divElem.innerHTML)
 
@@ -97,8 +117,8 @@ function buildProductPage() {
             } else
                 document.querySelector('[data-prodOptions]').remove()
 
-            calcProductPrice(elt.price, optionsList)
-            document.querySelector('[data-template="product"]').addEventListener('input', () => calcProductPrice(elt.price, optionsList))
+            document.querySelector('[data-prodPrice]').innerHTML = Number(Math.round((calcProductPrice(elt.price, optionsList) * document.querySelector('[data-prodQty]').value) + 'e2') + 'e-2').toFixed(2)
+            document.querySelector('[data-template="product"]').addEventListener('input', () => document.querySelector('[data-prodPrice]').innerHTML = Number(Math.round((calcProductPrice(elt.price, optionsList) * document.querySelector('[data-prodQty]').value) + 'e2') + 'e-2').toFixed(2))
         }
 
     })
@@ -110,8 +130,10 @@ function calcProductPrice(price, options) {
     document.querySelectorAll('[data-optProduct]').forEach(opt => {
         if ((opt.selected === true || opt.checked === true) && opt.value !== '')
             totalPrice += parseFloat(options[opt.value])
+        else if (opt.type === 'number' && opt.value !== '')
+            totalPrice += parseFloat(opt.value) * parseFloat(options[opt.id])
     })
-    document.querySelector('[data-prodPrice]').innerHTML = Number(Math.round((totalPrice * document.querySelector('[data-prodQty]').value) + 'e2') + 'e-2').toFixed(2)
+    return Number(Math.round((totalPrice) + 'e2') + 'e-2').toFixed(2)
 }
 
 function getProductsByCat() {
@@ -126,7 +148,6 @@ function getProductsByCat() {
         productsData.forEach(prod => {
 
             let thisProd
-
             cat !== 'all' && prod.category === cat && parseFloat(prod.access) === 0 ? thisProd = prod : cat === 'all' ? thisProd = prod : null
 
             if (thisProd && (counter <= count || count === -1)) {
@@ -139,7 +160,7 @@ function getProductsByCat() {
                 prodCardHTML.querySelector('[data-productName]').innerHTML = thisProd.name
                 thisProd.images[0] ? prodImg = thisProd.images[0] : prodImg = 'assets/images/aucune-image.png'
                 prodCardHTML.querySelector('[data-productImg]').src = prodImg
-                prodCardHTML.querySelector('[data-productPrice]').innerHTML = `${thisProd.price}€ TTC`
+                prodCardHTML.querySelector('[data-productPrice]').innerHTML = prod.options ? `<small>À partir de</small> ${thisProd.price}€ TTC` : `${thisProd.price}€ TTC`
                 catNode.insertAdjacentHTML('beforeend', prodCardHTML.innerHTML)
             }
         })

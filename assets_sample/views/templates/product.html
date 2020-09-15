@@ -8,8 +8,8 @@
                 <div class="column col-sm-12">
                     <h1 data-prodName class="h3"></h1>
                     <small data-prodRef></small>
-                    <div class="h3"><span data-prodPrice></span><small> € TTC l'unité</small></div>
-                    <div id="Qty" class="mb-2 pb-2"><span class="h4">Quantité</span><input class="ml-2" data-prodQty
+                    <div class="h3"><span data-prodPrice></span><small> € TTC</small></div>
+                    <div id="Qty" class="mb-2 pb-2"><span class="h4">Quantité</span><input class="ml-2 input-sm" data-prodQty
                                                                                            type="number" value="1"
                                                                                            min="1"></div>
                     <div class="divider mt-2 mb-2 pt-2 pb-2"></div>
@@ -18,7 +18,10 @@
                         <svg class="feather ml-2 mr-1">
                             <use xlink:href="assets/images/feather-sprite.svg#shopping-cart"/>
                         </svg>
-                        <span class="ml-2 mr-2">Ajouter au panier</span></button>
+                        <span class="ml-2 mr-2">Ajouter au panier</span>
+                    </button>
+                    <div><small id="requiredLegend" hidden>* champ(s) requis</small></div>
+
                 </div>
             </div>
         </div>

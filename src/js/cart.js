@@ -69,6 +69,7 @@ async function addCartFromProductPage(e) {
     let data = []
     let optionsList = []
     let optionsName = []
+    let validity = true
 
     productAdd = {
         "ref": productElem.querySelector('[data-prodRef]').innerHTML,
@@ -82,36 +83,47 @@ async function addCartFromProductPage(e) {
             prod.ref === productElem.querySelector('[data-prodRef]').innerHTML ? resolve(prod.variables) : null
         })
     })
+
     Object.getOwnPropertyNames(await prodVar).length > 0 ? productAdd.var = await prodVar : null
 
     if (productElem.querySelector('[data-prodoptions]')) {
         productElem.querySelectorAll('[data-optProduct]').forEach(opt => {
-
-            if ((opt.selected === true || opt.checked === true) && opt.value !== '') {
-                optionsList.push(opt.value)
-                optionsName.push(opt.dataset.name)
+            if( opt.required === true && opt.validity.valid !== true ){
+                validity = false
+            } else {
+                if ((opt.selected === true || opt.checked === true) && opt.value !== '' ){
+                    optionsList.push(opt.value)
+                    optionsName.push(opt.dataset.name)
+                } else if( opt.type === 'number' && opt.value !== '' ){
+                    optionsList.push(`${opt.id} : ${opt.value}`)
+                    optionsName.push(`${opt.placeholder} : ${opt.value}`)
+                }
             }
         })
         productAdd.options = optionsList
         productAdd.optName = optionsName
     }
 
-    if (!cartLocal || JSON.parse(cartLocal) === null || cartLocal.length <= 2) {
+    if ( validity === true ){
+        if (!cartLocal || JSON.parse(cartLocal) === null || cartLocal.length <= 2) {
 
-        await data.push(productAdd)
-        localStorage.setItem('cartLocal', JSON.stringify(data))
-        refreshCart()
+            await data.push(productAdd)
+            localStorage.setItem('cartLocal', JSON.stringify(data))
+            refreshCart()
 
+        } else {
+            data = JSON.parse(cartLocal)
+            let newItem = true
+            data.forEach(e => {
+                (productAdd.ref === e.ref && String(productAdd.options) === String(e.options)) ? (e.qty += productAdd.qty, newItem = false) : null;
+            })
+            newItem ? (data.push(productAdd), localStorage.setItem('cartLocal', JSON.stringify(data))) : localStorage.setItem('cartLocal', JSON.stringify(data))
+            refreshCart()
+
+        }
+        showPushNotification('success', 'Nouveau produit ajouté à votre panier')
     } else {
-
-        data = JSON.parse(cartLocal)
-        let newItem = true
-        data.forEach(e => {
-            (productAdd.ref === e.ref && String(productAdd.options) === String(e.options)) ? (e.qty += productAdd.qty, newItem = false) : null;
-        })
-        newItem ? (data.push(productAdd), localStorage.setItem('cartLocal', JSON.stringify(data))) : localStorage.setItem('cartLocal', JSON.stringify(data))
-        refreshCart()
-
+        showPushNotification('error', 'Veuillez remplir tous les champs correctement.')
     }
 
 }
