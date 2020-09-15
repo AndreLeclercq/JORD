@@ -18,7 +18,11 @@ export default class User {
     async createUser(data) {
         try {
             data.password = await argon2.hash(data.password)
-            return await db.createDocument('users', {email: data.email}, JSON.stringify(data))
+            delete data.action
+            delete data.confirmPassword
+            delete data.monprenom
+            delete data.monadresse
+            return await db.createDocument('users', {email: data.email}, data)
         } catch (error) {
             let err = new Error()
             await logSys((`${err.stack}\n${error}`), 'error')

@@ -69,7 +69,6 @@ export default class Database {
      * @returns {Promise<string>} message for error or success
      */
     async createDocument(collection, primaryKey, fields) {
-        logSys(fields, 'debug')
         try {
             this.document = await this.db.collection(collection).find(primaryKey)
             if (this.document.length !== undefined) {
