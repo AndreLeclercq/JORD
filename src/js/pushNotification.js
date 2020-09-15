@@ -1,9 +1,15 @@
 function showPushNotification(type, msg) {
 
-    let notice = document.createElement('div')
-    notice.innerHTML = pushNotificationHTML
-    notice = notice.firstElementChild
+    let notice
 
+    if(!document.getElementById('notice')){
+        notice = document.createElement('div')
+        notice.innerHTML = pushNotificationHTML
+        notice = notice.firstElementChild
+        document.getElementById('wrapper').firstElementChild.appendChild(notice)
+    }
+
+    notice = document.getElementById('notice')
     notice.classList.remove('show')
     notice.classList.add('hide')
     notice.classList.remove('info')
@@ -25,12 +31,10 @@ function showPushNotification(type, msg) {
     notice.querySelector('.msg').innerText = ''
     notice.querySelector('.msg').innerText = msg
 
-    !document.getElementById('notice') ? document.getElementById('wrapper').firstElementChild.appendChild(notice) : null
-
     notice.classList.toggle('hide')
     notice.classList.toggle('show')
 
-    setTimeout(function () {
+    setTimeout(() => {
         if (notice.classList.contains('show')) {
             notice.classList.toggle('show')
             notice.classList.toggle('hide')
