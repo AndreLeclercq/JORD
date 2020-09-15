@@ -17,7 +17,8 @@ export default class Database {
             this.name = config.global.dbName
             this.connection().then()
         } catch (error) {
-            logSys(`database.js > constructor() || ${error}`, 'error')
+            let err = new Error()
+            logSys((`${err.stack}\n${error}`), 'error')
             return error
         }
     }
@@ -37,7 +38,8 @@ export default class Database {
             await this.client.connect()
             this.db = this.client.db(this.name)
         } catch (error) {
-            await logSys(`database.js > connection() || ${error}`, 'error')
+            let err = new Error()
+            await logSys((`${err.stack}\n${error}`), 'error')
             return error
         }
     }
@@ -52,7 +54,8 @@ export default class Database {
         try {
             return await this.db.collection(collection).find().toArray()
         } catch (error) {
-            await logSys(`database.js > getCollection() || ${error}`, 'error')
+            let err = new Error()
+            await logSys((`${err.stack}\n${error}`), 'error')
             return error
         }
     }
@@ -66,6 +69,7 @@ export default class Database {
      * @returns {Promise<string>} message for error or success
      */
     async createDocument(collection, primaryKey, fields) {
+        logSys(fields, 'debug')
         try {
             this.document = await this.db.collection(collection).find(primaryKey)
             if (this.document.length !== undefined) {
@@ -73,14 +77,16 @@ export default class Database {
             } else {
                 await this.db.collection(collection).insertOne(fields, error => {
                     if (error) {
-                        logSys(error, 'error')
+                        let err = new Error()
+                        logSys((`${err.stack}\n${error}`), 'error')
                     }
                     logSys(`Document ADD with success in ${collection}`, 'success')
                 })
                 return 'create document'
             }
         } catch (error) {
-            await logSys(`database.js > createDocument() || ${error}`, 'error')
+            let err = new Error()
+            await logSys((`${err.stack}\n${error}`), 'error')
             return error
         }
     }
@@ -100,7 +106,8 @@ export default class Database {
             await logSys(`Document EDIT with success in ${collection}`, 'success')
             return 'edited document'
         } catch (error) {
-            await logSys(`database.js > editDocument() || ${error}`, 'error')
+            let err = new Error()
+            await logSys((`${err.stack}\n${error}`), 'error')
         }
     }
 
@@ -116,7 +123,8 @@ export default class Database {
             this.document = await this.db.collection(collection).find(primaryKey).toArray()
             return this.document[0] === undefined ? 'document not found' : this.document[0]
         } catch (error) {
-            await logSys(`database.js > getDocument() || ${error}`, 'error')
+            let err = new Error()
+            await logSys((`${err.stack}\n${error}`), 'error')
         }
     }
 }

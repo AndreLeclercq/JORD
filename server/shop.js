@@ -28,7 +28,8 @@ export default class Shop {
                     : null
             return typeof resp === 'object' ? resp.cart : resp
         } catch (error) {
-            logSys(`here = ${error}`, 'error')
+            let err = new Error()
+            await logSys((`${err.stack}\n${error}`), 'error')
         }
     }
 
@@ -52,8 +53,9 @@ export default class Shop {
                 'dateCreate': await dateTime()
             }
             return await db.createDocument('orders', {_id: '000'}, order)
-        } catch (e) {
-            logSys(e, 'error')
+        } catch (error) {
+            let err = new Error()
+            await logSys((`${err.stack}\n${error}`), 'error')
         }
     }
 }

@@ -41,8 +41,10 @@ export default class Prod {
                 delete prod.priceRules
             })
             return db
-        } catch (e) {
-            return e
+        } catch (error) {
+            let err = new Error()
+            logSys((`${err.stack}\n${error}`), 'error')
+            return error
         }
     }
 
