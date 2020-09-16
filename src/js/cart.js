@@ -84,7 +84,8 @@ async function addCartFromProductPage(e) {
         })
     })
 
-    Object.getOwnPropertyNames(await prodVar).length > 0 ? productAdd.var = await prodVar : null
+    if(await prodVar !== null)
+        Object.getOwnPropertyNames(await prodVar).length > 0 ? productAdd.var = await prodVar : null
 
     if (productElem.querySelector('[data-prodoptions]')) {
         productElem.querySelectorAll('[data-optProduct]').forEach(opt => {
