@@ -27,7 +27,13 @@ function refreshCart() {
                     optsName = optsName.replace(/,/g, ', ')
                 }
 
+                let imgProd = ''
+                productsData.forEach(prod => {
+                    e.ref === prod.ref ? imgProd = prod.images[0] : null
+                })
+
                 tbody.lastElementChild.querySelector('.refLabel > .value').innerHTML = e.ref
+                tbody.lastElementChild.querySelector('.imgLabel > img').src = imgProd
                 tbody.lastElementChild.querySelector('.productLabel > .value').innerHTML = `${e.name} <br><small>${optsName}</small>`
                 tbody.lastElementChild.querySelector('.priceLabel > .value').innerHTML = Number(Math.round(e.price + 'e2') + 'e-2').toFixed(2)
                 tbody.lastElementChild.querySelector('.qtyLabel > .value').innerHTML = e.qty
@@ -84,7 +90,8 @@ async function addCartFromProductPage(e) {
         })
     })
 
-    Object.getOwnPropertyNames(await prodVar).length > 0 ? productAdd.var = await prodVar : null
+    if(await prodVar !== null)
+        Object.getOwnPropertyNames(await prodVar).length > 0 ? productAdd.var = await prodVar : null
 
     if (productElem.querySelector('[data-prodoptions]')) {
         productElem.querySelectorAll('[data-optProduct]').forEach(opt => {
@@ -92,11 +99,12 @@ async function addCartFromProductPage(e) {
                 validity = false
             } else {
                 if ((opt.selected === true || opt.checked === true) && opt.value !== '' ){
-                    optionsList.push(opt.value)
-                    optionsName.push(opt.dataset.name)
-                } else if( opt.type === 'number' && opt.value !== '' ){
-                    optionsList.push(`${opt.id} : ${opt.value}`)
-                    optionsName.push(`${opt.placeholder} : ${opt.value}`)
+                    console.log(opt.closest('.optGrp').firstElementChild.innerHTML)
+                    optionsList.push(`${opt.id}: ${opt.value}`)
+                    optionsName.push(`${opt.closest('.optGrp').firstElementChild.innerHTML}: ${opt.dataset.name}`)
+                } else if( opt.type === 'number' && opt.value !== '' && opt.value != 0 ){
+                    optionsList.push(`${opt.id}: ${opt.value}`)
+                    optionsName.push(`${opt.placeholder}: ${opt.value}`)
                 }
             }
         })
@@ -175,7 +183,7 @@ function removeCart(ref, opt) {
     JSON.parse( cartLocal ).forEach( e => {
         let optList = ''
         e.options.forEach(op => optList += `${op},`),
-        (e.ref === ref && optList.slice(0, -1) === opt) ? null : newData.push(e)
+            (e.ref === ref && optList.slice(0, -1) === opt) ? null : newData.push(e)
     })
     newData.length <= 0 ? ( localStorage.removeItem( 'cartLocal' ), refreshCart( ), hideModal( ) ) : ( localStorage.setItem( 'cartLocal', JSON.stringify( newData ) ), refreshCart( ) )
 

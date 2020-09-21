@@ -1,6 +1,7 @@
-import nodeMailer from 'nodemailer'
-import logSys from './msgSystem.js'
-import {config} from '../assets/config.js'
+import nodeMailer   from 'nodemailer'
+import fs           from 'fs'
+import logSys       from './msgSystem.js'
+import { config }   from '../assets/config.js'
 
 /**
  * Manage email sending
@@ -9,14 +10,14 @@ import {config} from '../assets/config.js'
 export default class Email {
 
     constructor() {
-        this.transporter = nodeMailer.createTransport({
+        this.transporter = nodeMailer.createTransport( {
             host: config.mail.host,
             port: config.mail.port,
             auth: {
                 user: config.mail.user,
                 pass: config.mail.pass
             }
-        })
+        } )
     }
 
     /**
@@ -25,26 +26,40 @@ export default class Email {
      * @param {object} [data] to create and send email
      * @returns {Promise<void>}
      */
-    async send(data) {
-        await logSys('EMAIL: Generate email')
+    async send( data ){
+        await logSys( 'EMAIL: Generate email' )
+        this.msgTxt = data.msg
+        this.msgHtml = data.msg
+        fs.access(`./assets/views/email/${ data.model }.txt`, fs.F_OK, (err) => {
+            if(!err)
+                this.msgTxt = { path: `./assets/views/email/${ data.model }.txt` }
+            this.msgHtml = { path: `./assets/views/email/${ data.model }.html` }
+        })
+
         this.message = {
-            from: "ne-pas-repondre@jord.com",
+            from: config.mail.email_adress,
             to: data.email,
             subject: data.subject,
-            text: ({path: `./public/assets/views/email/${data.textFile}.txt`}),
-            html: ({path: `./public/assets/views/email/${data.textFile}.html`})
+            text: ( this.msgTxt ),
+            html: ( this.msgHtml )
         }
 
-        await this.transporter.sendMail(this.message, function (error, res) {
-            if (error) {
-                let err = new Error()
-                logSys((`${err.stack}\n${error}`), 'error')
-            } else {
-                logSys('EMAIL: Email SEND', 'success')
-                logSys(`EMAIL: Response >> ${res.response}`)
-                logSys(`EMAIL: MessageID >> ${res.messageId}`)
-            }
+        this.resp = new Promise( async resolve => {
+            await this.transporter.sendMail( this.message, function( err, res ) {
+                if ( err ) {
+                    logSys( err, 'error' )
+                    resolve('error')
+                } else {
+                    logSys( 'EMAIL: Email SEND', 'success' )
+                    logSys( `EMAIL: Response >> ${ res.response }`)
+                    logSys( `EMAIL: MessageID >> ${ res.messageId }` )
+                    resolve('send')
+                }
+            })
         })
+
+        return await this.resp
+
 
     }
 }

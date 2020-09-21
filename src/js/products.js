@@ -12,7 +12,9 @@ function buildProductPage() {
 
             let prodImg
             elt.images[0] ? prodImg = elt.images[0] : prodImg = 'assets/images/aucune-image.png'
-            document.querySelector('[data-prodImg]').src = prodImg
+            document.querySelector('[data-prodImg]').src = `${prodImg}.webp`
+            document.querySelector('[data-prodImg]').previousElementSibling.srcset = prodImg
+            document.querySelector('[data-prodImg]').previousElementSibling.previousElementSibling.srcset = `${prodImg}.webp`
 
             let tableTech = document.querySelector('[data-prodTech]').querySelector('tbody')
             elt.tech !== undefined ? tableTech.innerHTML = tableTech.innerHTML.concat(`<tr><td>${elt.tech}</td></tr>`) : null
@@ -159,6 +161,9 @@ function getProductsByCat() {
                 prodCardHTML.querySelector('[data-productCard]').dataset.filters = `[${JSON.stringify(thisProd.filters)}]`
                 prodCardHTML.querySelector('[data-productName]').innerHTML = thisProd.name
                 thisProd.images[0] ? prodImg = thisProd.images[0] : prodImg = 'assets/images/aucune-image.png'
+                prodCardHTML.querySelector('[data-productImg]').src = prodImg
+                prodCardHTML.querySelector('[data-productImg]').previousElementSibling.srcset = prodImg
+                prodCardHTML.querySelector('[data-productImg]').previousElementSibling.previousElementSibling.srcset = `${prodImg}.webp`
                 prodCardHTML.querySelector('[data-productImg]').src = prodImg
                 prodCardHTML.querySelector('[data-productPrice]').innerHTML = prod.options ? `<small>À partir de</small> ${thisProd.price}€ TTC` : `${thisProd.price}€ TTC`
                 catNode.insertAdjacentHTML('beforeend', prodCardHTML.innerHTML)

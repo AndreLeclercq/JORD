@@ -12,6 +12,7 @@ import User from './server/user.js'
 import Shop from './server/shop.js'
 // import Payment      from './server/payment.js'
 import Database from './server/database.js'
+import Email from './server/email.js'
 
 let db = new Database()
 
@@ -113,6 +114,9 @@ async function handleRequest(req, res) {
             } else {
                 await prepareResponse(res, false)
             }
+        } else if (req.param.action === 'sendEmail') {
+            let email = new Email()
+            await prepareResponse(res, await email.send( req.param ))
         }
     } else if (path.extname(String(req.url)) === '' && String(req.url.pathname) !== '/') {
         res.headers['Location'] = '/#' + String(req.url.pathname).replace('/', '')
