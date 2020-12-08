@@ -9,8 +9,12 @@
 ![GitHub](https://img.shields.io/github/license/andreleclercq/jord?style=for-the-badge)
 
 # JORD 🌱
-JORD is a Single Page Application for eShop, with a minimal of dependencies. Better, Faster, Stronger with Javascript Vanilla.
-This is a personnal project, but if you want you can use it with love and respect. JORD is NOT a CMS.
+JORD is a Single Page Application for eShop, with a minimal of dependencies and without frameworks. Better, Faster, Stronger with Javascript Vanilla.
+This is a personnal project, but if you want you can use it with love and respect. JORD is a prototype and is NOT a CMS.
+
+[French]
+JORD est une Single Page Application pour eCommerce avec un minimum de dépendances et sans frameworks. Conçu en Javascript ES6.
+Il s'agit d'un projet personnel mais si vous le souhaitez vous pouvez l'utiliser avec amour et respect. JORD est un prototype et n'est PAS un CMS.
 
 ## Prerequisites
 * Javascript Vanilla
